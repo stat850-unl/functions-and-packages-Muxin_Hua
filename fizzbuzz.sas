@@ -2,7 +2,24 @@ proc iml;
 
 start fizzbuzz(x);
 /* FizzBuzz code goes here */
-
+     if mod(x,15)=0 then;
+		do;
+			return('FizzBuzz');
+		end;
+	else if mod(x,5)=0 then;
+		do;
+			return('Buzz');
+		end;
+	else if mod(x,3)=0 then;
+		do;
+			return('Fizz');
+		end;
+	else;
+		do;
+			temp=char(x,2,1);
+			y=temp[1,1];
+			return(y);
+		end;
 finish;
 
 x1 = repeat(0, 20); /* initialize x1 */

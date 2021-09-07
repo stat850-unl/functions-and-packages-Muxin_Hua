@@ -1,6 +1,6 @@
 ---
 title: "Homework: Functions and Packages"
-author: "Firstname Lastname"
+author: "Muxin Hua"
 output: html_document
 ---
 
@@ -10,7 +10,7 @@ options(digits = 3)
 ```
 
 ```{r load-sas-libraries, echo = F, message = F, warning = F}
-saspath <- "/usr/local/SASHome/SASFoundation/9.4/bin/sas_en" # Your SAS path goes here
+saspath <- "C:\\Program Files\\SASHome\\SASFoundation\\9.4\\sas.exe" # Your SAS path goes here
 sasopts <- "-nosplash -ls 75"
 
 # Please leave this in so that I can test it!
@@ -50,7 +50,21 @@ Show the results from running your function on the integers 1-20, as well as a s
 
 fizzbuzz <- function(x) {
   # FizzBuzz code goes here
-
+  for(num in x){
+    if (num%%15==0){
+      print('FizzBuzz')
+    }
+    else if (num%%3==0){
+      print('Fizz')
+    }
+    else if (num%%5 == 0){
+      print('Buzz')
+    }
+    else{
+      print(num)
+    }
+    num <- num+1
+  }
 }
 
 ```
@@ -67,8 +81,25 @@ proc iml;
 
 start fizzbuzz(x);
 /* FizzBuzz code goes here */
-
-finish;
+  if mod(x,15)=0 then;
+		do;
+			return('FizzBuzz');
+		end;
+	else if mod(x,5)=0 then;
+		do;
+			return('Buzz');
+		end;
+	else if mod(x,3)=0 then;
+		do;
+			return('Fizz');
+		end;
+	else;
+		do;
+			temp=char(x,2,1);
+			y=temp[1,1];
+			return(y);
+		end;
+  finish;
 
 x1 = repeat(0, 20); /* initialize x1 */
 fb1 = repeat("        ", 20);
@@ -104,11 +135,26 @@ Delete this line and write your response.
 Find an R package which is interesting to you. Fill in the package name above, and describe or demonstrate some feature of the package here. 
 
 ```{r, cache = T}
+# ggplot2 is a powerful and flexible R package for producing elegant graphs. It devides plot into three fundamental parts: plot =data + aesthetics + geometry. Demonstration is as below. Pima is a data set recording  a study about diabetes, digestive and Kidney disease among 768 adult female Pima Indians living near Phoenix. All the columns except 'test' are quantitative medical index's. After converting numerical 'test' data into categorical, we can plot some graphs about the data.
 
+data(pima, package = 'faraway')
+require(ggplot2)
+pima$test <- factor(pima$test) 
+
+#use data 'Pima', aesthetic specifies we see position in the x or y direction, using different geometries.
+ggplot(pima,aes(x=diastolic))+geom_histogram() 
+
+ggplot(pima,aes(x=diastolic))+geom_density() 
+ggplot(pima,aes(x=diastolic, y=diabetes))+geom_point()
+
+#Showing the relationship between diastolic and diabetes with varying test.
+ggplot(pima,aes(x=diastolic,y=diabetes,shape=test))+geom_point()+theme(legend.position = "top",legend.direction = "horizontal") 
+
+ggplot(pima,aes(x=diastolic,y=diabetes))+geom_point(size=1)+facet_grid(~ test)
 ```
 
 
-### SAS Procedure: XXXX
+### SAS Procedure: SGPLOt
 Look through the [SAS Procedures Guide](https://go.documentation.sas.com/?docsetId=proc&docsetTarget=part-2.htm&docsetVersion=9.4&locale=en) (or [this](https://go.documentation.sas.com/?docsetId=proc&docsetTarget=p0ptdedyvyouspn1erbeqr0floca.htm&docsetVersion=9.4&locale=en) guide to procedures documented elsewhere) and find a procedure that is interesting to you that we haven't yet discussed (which is most of them). Read the documentation of that procedure and demonstrate its use on a data set that is appropriate. **Do not just copy the example code** - actually explore what the procedure does. If you need code to get a dataset into SAS, check out [Module 4](https://srvanderplas.github.io/unl-stat850/reading-data.html#delimited-text-files), which has several chunks you can likely steal verbatim. There is also some sample data in the sashelp library.
 
 Make sure to replace the XXXX above with the name of the procedure you have chosen.
@@ -116,6 +162,34 @@ Make sure to replace the XXXX above with the name of the procedure you have chos
 Fill in your code in the chunk below, or in the proc-demo.sas file if you are not using SASMarkdown. You should still describe the PROC you have chosen here, using markdown syntax -- only the code should go into the SAS file.
 
 ```{sashtml proc-demo, error = T}
+/*Gouping s scatter plot*/
+proc sgplot data=sashelp.class;
+	scatter x=height y=weight / group=sex;
+run;
+
+/*Plotting three series*/
+proc sgplot data=sashelp.stocks
+	(where=(date >= '01jan2000'd and stock = 'IBM'));
+	title 'Stock Trend';
+	series x=date y=close;
+	series x=date y=low;
+	series x=date y=high;
+run;
+
+/*Combining Histograms with density plots*/
+proc sgplot data=sashelp.heart;
+ title 'Cholesterol Distribution';
+ histogram cholesterol;
+ density cholesterol;
+ density cholesterol / type=kernel;
+ keylegend / location=inside position=topright;
+run;
+
+/*Adding statistical limits to a dot plot*/
+proc sgplot data=sashelp.class(where=(age<16));
+	dot age / response=height stat=mean
+			  limitstat=stddev numstd=1;
+run;
 
 ```
 
