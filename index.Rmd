@@ -11,7 +11,7 @@ options(digits = 3)
 
 ```{r load-sas-libraries, echo = F, message = F, warning = F}
 saspath <- "C:\\Program Files\\SASHome\\SASFoundation\\9.4\\sas.exe" # Your SAS path goes here
-sasopts <- "-nosplash -ls 75"
+sasopts <- " -ls 75"
 
 # Please leave this in so that I can test it!
 # saspath <- "/usr/local/SASHome/SASFoundation/9.4/bin/sas_en" 
@@ -76,62 +76,17 @@ fizzbuzz(sample(1:100, 10)) # sample 10 values from 1 to 100
 
 In the sas chunk, write similar code which will solve this problem. If you are not using SASMarkdown, then please edit the fizzbuzz.sas file instead and delete the chunk below.
 
-```{sashtml fizzbuzz-sas, error = T}
-proc iml;
-
-start fizzbuzz(x);
-/* FizzBuzz code goes here */
-  if mod(x,15)=0 then;
-		do;
-			return('FizzBuzz');
-		end;
-	else if mod(x,5)=0 then;
-		do;
-			return('Buzz');
-		end;
-	else if mod(x,3)=0 then;
-		do;
-			return('Fizz');
-		end;
-	else;
-		do;
-			temp=char(x,2,1);
-			y=temp[1,1];
-			return(y);
-		end;
-  finish;
-
-x1 = repeat(0, 20); /* initialize x1 */
-fb1 = repeat("        ", 20);
-do i = 1 to 20;
-  x1[i] = i;
-  fb1[i] = fizzbuzz(x1[i]);
-end;
-
-x2 = repeat(0, 10); /* initialize x2 */
-fb2 = repeat("xxxxxxxx", 10); /* initialize fb2 */
-do i = 1 to 10;
-  x2[i] = rand("Integer", 1, 100);
-  fb2[i] = fizzbuzz(x2[i]);
-end;
-
-print x1 fb1, x2 fb2;
-
-quit;
-```
-
 
 ### Self-evaluation
 
 Compare your code from this week to your code from last week's assignment. What additional overhead is necessary to write a general function as opposed to implementing FizzBuzz for just the numbers 1-30? What are the advantages of having a function?
 
-
-Delete this line and write your response.
+We need to declare function at very beginning to define a function(<-function() for R and start function for SAS). This allows us call the function whenever we need it and save us much repetition time, and making the code shorter and easier to read.
 
 
 ## Exploring Packages and Modules
 
-### R Package: XXXX
+### R Package: ggplot2
 Find an R package which is interesting to you. Fill in the package name above, and describe or demonstrate some feature of the package here. 
 
 ```{r, cache = T}
@@ -154,42 +109,20 @@ ggplot(pima,aes(x=diastolic,y=diabetes))+geom_point(size=1)+facet_grid(~ test)
 ```
 
 
-### SAS Procedure: SGPLOt
+### SAS Procedure: SGPLOT
 Look through the [SAS Procedures Guide](https://go.documentation.sas.com/?docsetId=proc&docsetTarget=part-2.htm&docsetVersion=9.4&locale=en) (or [this](https://go.documentation.sas.com/?docsetId=proc&docsetTarget=p0ptdedyvyouspn1erbeqr0floca.htm&docsetVersion=9.4&locale=en) guide to procedures documented elsewhere) and find a procedure that is interesting to you that we haven't yet discussed (which is most of them). Read the documentation of that procedure and demonstrate its use on a data set that is appropriate. **Do not just copy the example code** - actually explore what the procedure does. If you need code to get a dataset into SAS, check out [Module 4](https://srvanderplas.github.io/unl-stat850/reading-data.html#delimited-text-files), which has several chunks you can likely steal verbatim. There is also some sample data in the sashelp library.
 
 Make sure to replace the XXXX above with the name of the procedure you have chosen.
 
 Fill in your code in the chunk below, or in the proc-demo.sas file if you are not using SASMarkdown. You should still describe the PROC you have chosen here, using markdown syntax -- only the code should go into the SAS file.
 
-```{sashtml proc-demo, error = T}
-/*Gouping s scatter plot*/
-proc sgplot data=sashelp.class;
-	scatter x=height y=weight / group=sex;
-run;
+### SGPLOT is a SAS procedure for creating one or more plots. They can be *overlayed* on a single set of axes as well as some statistical graphics. I got a few demonstrations below.
 
-/*Plotting three series*/
-proc sgplot data=sashelp.stocks
-	(where=(date >= '01jan2000'd and stock = 'IBM'));
-	title 'Stock Trend';
-	series x=date y=close;
-	series x=date y=low;
-	series x=date y=high;
-run;
+>This is *plotting scatter plot* showing different groups in different colors which can be done by assigning **group=**.
 
-/*Combining Histograms with density plots*/
-proc sgplot data=sashelp.heart;
- title 'Cholesterol Distribution';
- histogram cholesterol;
- density cholesterol;
- density cholesterol / type=kernel;
- keylegend / location=inside position=topright;
-run;
+>This is *plotting three series* in one plot in a single set of axes, which can be done by **series x= y=**.
 
-/*Adding statistical limits to a dot plot*/
-proc sgplot data=sashelp.class(where=(age<16));
-	dot age / response=height stat=mean
-			  limitstat=stddev numstd=1;
-run;
+>This is *combining histograms with density plots*. To to do, one need to put command together and specifies the location of legend using **keylegend/ location= ** if needed.
 
-```
+>This is *adding statistical limits to a dot plot*. This can be done by **stat= limitstat= ** to assign the needed value.
 
