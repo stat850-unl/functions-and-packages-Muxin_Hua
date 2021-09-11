@@ -1,0 +1,128 @@
+---
+title: "Homework: Functions and Packages"
+author: "Muxin Hua"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(digits = 3)
+```
+
+```{r load-sas-libraries, echo = F, message = F, warning = F}
+saspath <- "C:\\Program Files\\SASHome\\SASFoundation\\9.4\\sas.exe" # Your SAS path goes here
+sasopts <- " -ls 75"
+
+# Please leave this in so that I can test it!
+# saspath <- "/usr/local/SASHome/SASFoundation/9.4/bin/sas_en" 
+# sasopts <- "-ls 75"
+knitr::opts_chunk$set(engine.path=list(sas=saspath, saslog=saspath, sashtml=saspath),
+                      engine.opts=list(sas=sasopts, saslog=sasopts, sashtml=sasopts), 
+                      comment=NA)
+library(SASmarkdown)
+```
+
+## Instructions
+This homework has two main problems. In the FizzBuzz section, you should only modify the code chunks. In the Packages/Procedures section, you should modify the text (anything that doesn't have a `###` in front of it) and the code chunks. Feel free to add additional code chunks as necessary.
+
+Make sure you also edit the author name at the top of the document. 
+
+When you are finished with the assignment: 
+
+1. Save the file as 03_Lastname_Firstname.Rmd and compile it
+2. Commit the Rmd file and corresponding html file to your homework git repo
+3. Push the commit to github
+4. Locate the Rmd file on github and click on the SHA link for the file
+5. Paste the url of the resulting page into Canvas to submit your assignment.
+
+Your assignment must compile on a different computer as long as the saspath is set correctly for that machine.
+
+## FizzBuzz Functions
+
+The "FizzBuzz Test" is a famous programming interview question. 
+> Write a program that prints the numbers from 1 to 30. But for multiples of three print “Fizz” instead of the number and for the multiples of five print “Buzz”. For numbers which are multiples of both three and five print “FizzBuzz
+
+In the R chunk below, write a function which will solve this problem. Do not change the function name or parameter name. 
+
+Show the results from running your function on the integers 1-20, as well as a sequence of 10 random integers between 0 and 100. (This code is already written for you).
+
+```{r fizzbuzz-solution, echo = T}
+
+fizzbuzz <- function(x) {
+  # FizzBuzz code goes here
+  for(num in x){
+    if (num%%15==0){
+      print('FizzBuzz')
+    }
+    else if (num%%3==0){
+      print('Fizz')
+    }
+    else if (num%%5 == 0){
+      print('Buzz')
+    }
+    else{
+      print(num)
+    }
+    num <- num+1
+  }
+}
+
+```
+
+```{r test-fizzbuzz}
+fizzbuzz(1:20)
+fizzbuzz(sample(1:100, 10)) # sample 10 values from 1 to 100
+```
+
+In the sas chunk, write similar code which will solve this problem. If you are not using SASMarkdown, then please edit the fizzbuzz.sas file instead and delete the chunk below.
+
+
+### Self-evaluation
+
+Compare your code from this week to your code from last week's assignment. What additional overhead is necessary to write a general function as opposed to implementing FizzBuzz for just the numbers 1-30? What are the advantages of having a function?
+
+We need to declare function at very beginning to define a function(<-function() for R and start function for SAS). This allows us call the function whenever we need it and save us much repetition time, and making the code shorter and easier to read.
+
+
+## Exploring Packages and Modules
+
+### R Package: ggplot2
+Find an R package which is interesting to you. Fill in the package name above, and describe or demonstrate some feature of the package here. 
+
+```{r, cache = T}
+# ggplot2 is a powerful and flexible R package for producing elegant graphs. It devides plot into three fundamental parts: plot =data + aesthetics + geometry. Demonstration is as below. Pima is a data set recording  a study about diabetes, digestive and Kidney disease among 768 adult female Pima Indians living near Phoenix. All the columns except 'test' are quantitative medical index's. After converting numerical 'test' data into categorical, we can plot some graphs about the data.
+
+data(pima, package = 'faraway')
+require(ggplot2)
+pima$test <- factor(pima$test) 
+
+#use data 'Pima', aesthetic specifies we see position in the x or y direction, using different geometries.
+ggplot(pima,aes(x=diastolic))+geom_histogram() 
+
+ggplot(pima,aes(x=diastolic))+geom_density() 
+ggplot(pima,aes(x=diastolic, y=diabetes))+geom_point()
+
+#Showing the relationship between diastolic and diabetes with varying test.
+ggplot(pima,aes(x=diastolic,y=diabetes,shape=test))+geom_point()+theme(legend.position = "top",legend.direction = "horizontal") 
+
+ggplot(pima,aes(x=diastolic,y=diabetes))+geom_point(size=1)+facet_grid(~ test)
+```
+
+
+### SAS Procedure: SGPLOT
+Look through the [SAS Procedures Guide](https://go.documentation.sas.com/?docsetId=proc&docsetTarget=part-2.htm&docsetVersion=9.4&locale=en) (or [this](https://go.documentation.sas.com/?docsetId=proc&docsetTarget=p0ptdedyvyouspn1erbeqr0floca.htm&docsetVersion=9.4&locale=en) guide to procedures documented elsewhere) and find a procedure that is interesting to you that we haven't yet discussed (which is most of them). Read the documentation of that procedure and demonstrate its use on a data set that is appropriate. **Do not just copy the example code** - actually explore what the procedure does. If you need code to get a dataset into SAS, check out [Module 4](https://srvanderplas.github.io/unl-stat850/reading-data.html#delimited-text-files), which has several chunks you can likely steal verbatim. There is also some sample data in the sashelp library.
+
+Make sure to replace the XXXX above with the name of the procedure you have chosen.
+
+Fill in your code in the chunk below, or in the proc-demo.sas file if you are not using SASMarkdown. You should still describe the PROC you have chosen here, using markdown syntax -- only the code should go into the SAS file.
+
+### SGPLOT is a SAS procedure for creating one or more plots. They can be *overlayed* on a single set of axes as well as some statistical graphics. I got a few demonstrations below.
+
+>This is *plotting scatter plot* showing different groups in different colors which can be done by assigning **group=**.
+
+>This is *plotting three series* in one plot in a single set of axes, which can be done by **series x= y=**.
+
+>This is *combining histograms with density plots*. To to do, one need to put command together and specifies the location of legend using **keylegend/ location= ** if needed.
+
+>This is *adding statistical limits to a dot plot*. This can be done by **stat= limitstat= ** to assign the needed value.
+
